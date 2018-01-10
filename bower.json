@@ -1,0 +1,24 @@
+{
+  "name": "hipsweet",
+  "description": "",
+  "main": "gulpfile.js",
+  "authors": [
+    "Yaroslav Afanasiev <yaroslav.afanassiev@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/Approxipix/HipSweet",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "jquery": "^3.2.1"
+  },
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "normalize-css": "normalize.css#^7.0.0"
+  }
+}
