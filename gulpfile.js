@@ -101,15 +101,19 @@ gulp.task('styles', function() {
 });
 
 // Выполняем сборку html.
-gulp.task('html', function() {
-	gulp.src(path.app.html)
-		.pipe(wiredep({   //Добавление ссылок на плагины bower.
-			directory: 'bower_components/'
+gulp.task('scripts', function() {
+	return gulp.src(path.app.js)
+		.pipe(plumber({   // plumber - плагин для отловли ошибок.
+			errorHandler: notify.onError(function(err) {   // nofity - представление ошибок в удобном для вас виде.
+				return {
+					title: 'Script',
+					message: err.message
+				}
+			})
 		}))
-		.pipe(gulp.dest(path.dist.html))
-		.on('end', function() {   //запуск задачу 'useref' по завершению задачи 'html'.
-			gulp.run('useref');
-		});
+		.pipe(concat('scripts.min.js'))  //Собираем файлы.
+		.pipe(uglify())   //Минификация скриптов.
+    .pipe(gulp.dest(path.dist.js));
 });
 
 // Парсит блоки и конкатенирует описанные в них стили и скрипты.
