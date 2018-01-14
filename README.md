@@ -105,6 +105,25 @@ gulp.task('styles', function() {
 });
 
 // Выполняем сборку html.
+gulp.task('html', function() {
+	gulp.src(path.app.html)
+		.pipe(wiredep({   //Добавление ссылок на плагины bower.
+			directory: 'bower_components/'
+		}))
+		.pipe(gulp.dest(path.dist.html))
+		.on('end', function() {   //запуск задачу 'useref' по завершению задачи 'html'.
+			gulp.run('useref');
+		});
+});
+
+// Парсит блоки и конкатенирует описанные в них стили и скрипты.
+gulp.task('useref', function() {
+	return gulp.src('dist/**/*.html')
+		.pipe(useref())   //Выполняет объединение файлов в один по указанным в разметке html комментариев.
+		.pipe(gulp.dest(path.dist.html));
+});
+
+// Выполняет сборку наших скриптов.
 gulp.task('scripts', function() {
 	return gulp.src(path.app.js)
 		.pipe(plumber({   // plumber - плагин для отловли ошибок.
@@ -118,23 +137,6 @@ gulp.task('scripts', function() {
 		.pipe(concat('scripts.min.js'))  //Собираем файлы.
 		.pipe(uglify())   //Минификация скриптов.
     .pipe(gulp.dest(path.dist.js));
-});
-
-// Парсит блоки и конкатенирует описанные в них стили и скрипты.
-gulp.task('useref', function() {
-	return gulp.src('dist/**/*.html')
-		.pipe(useref())   //Выполняет объединение файлов в один по указанным в разметке html комментариев.
-		.pipe(gulp.dest(path.dist.html));
-});
-
-// Выполняет сборку наших скриптов.
-gulp.task('scripts', function() {
-	return gulp.src(path.app.js)
-		.pipe(sourcemaps.init())   //История изменения стилей, которая помогает нам при отладке в devTools.
-		.pipe(uglify())   //Минификация скриптов.
-    .pipe(sourcemaps.write())   //Пропишем карты.
-		.pipe(concat('scripts.min.js'))  //Собираем файлы.
-		.pipe(gulp.dest(path.dist.js));
 });
 
 // Задача для запуска сервера.
