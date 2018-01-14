@@ -121,10 +121,11 @@ gulp.task('useref', function() {
 
 // Выполняет сборку наших скриптов.
 gulp.task('scripts', function() {
-	gulp.src(path.app.js)
+	return gulp.src(path.app.js)
 		.pipe(sourcemaps.init())   //История изменения стилей, которая помогает нам при отладке в devTools.
 		.pipe(uglify())   //Минификация скриптов.
     .pipe(sourcemaps.write())   //Пропишем карты.
+		.pipe(concat('scripts.min.js'))  //Собираем файлы.
 		.pipe(gulp.dest(path.dist.js));
 });
 
