@@ -2,34 +2,34 @@
 
 ```javascript
 
-var gulp         = require('gulp'),
+var 		gulp         = require('gulp'),
 		sass         = require('gulp-sass'),
 		autoprefixer = require('gulp-autoprefixer'),
 		concat       = require('gulp-concat'),
 		cssnano      = require('gulp-cssnano'),
 		rename       = require('gulp-rename'),
 		compass      = require('gulp-compass'),
-		clean 			 = require('gulp-clean'),
-		notify 			 = require('gulp-notify'),
-		plumber 		 = require('gulp-plumber'),
+		clean 	     = require('gulp-clean'),
+		notify       = require('gulp-notify'),
+		plumber      = require('gulp-plumber'),
 		sourcemaps   = require('gulp-sourcemaps'),
-		uglify 			 = require('gulp-uglify'),
-		wiredep 		 = require('gulp-wiredep'),
-  	useref 			 = require('gulp-useref'),
-  	imagemin     = require('gulp-imagemin'),
-  	pngquant    = require('imagemin-pngquant'),
-  	browserSync  = require('browser-sync').create();
+		uglify 	     = require('gulp-uglify'),
+		wiredep      = require('gulp-wiredep'),
+  		useref 	     = require('gulp-useref'),
+  		imagemin     = require('gulp-imagemin'),
+  		pngquant     = require('imagemin-pngquant'),
+  		browserSync  = require('browser-sync').create();
 
 // Все необходимые нам пути.
 var path = {
-	dist: {   //Путь куда складывать готовые после сборки файлы.
-		html: 'dist/',
+  dist: {   //Путь куда складывать готовые после сборки файлы.
+    html: 'dist/',
     js: 'dist/js/',
     css: 'dist/css/',
     img: 'dist/img/',
-   	fonts: 'dist/fonts/'
+    fonts: 'dist/fonts/'
 	},
-	app: {   //Пути откуда брать исходники
+  app: {   //Пути откуда брать исходники
     html: 'app/**/*.html', 
     js: 'app/js/**/*.js',
     css: 'app/css/main.scss',
@@ -66,7 +66,7 @@ gulp.task('dist', ['html', 'styles', 'scripts', 'img', 'fonts']);
 
 // Задача 'watch' следит за всеми нашими файлами в проекте и при изменении тех или иных перезапустает соответсвующую задачу.
 gulp.task('watch', function() {
-	gulp.watch(path.watch.css, ['styles']); 
+    gulp.watch(path.watch.css, ['styles']); 
     gulp.watch(path.watch.js, ['scripts']);
     gulp.watch([path.watch.html, './bower.json'], ['html']); 
     gulp.watch(path.watch.img, ['img']);   
@@ -146,7 +146,7 @@ gulp.task('browser-sync', function() {
 // Оптимизация изоброжений.
 gulp.task('img', function() {
 	return gulp.src(path.app.img)
-		.pipe(imagemin({  // Сжимаем их с наилучшими настройками с учетом кеширования
+	   .pipe(imagemin({  // Сжимаем их с наилучшими настройками с учетом кеширования
 	      interlaced: true,
 	      progressive: true,
 	      svgoPlugins: [{removeViewBox: false}],
