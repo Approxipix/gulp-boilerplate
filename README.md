@@ -2,44 +2,39 @@
 
 ```javascript
 
-var 		gulp         = require('gulp'),
-		sass         = require('gulp-sass'),
-		autoprefixer = require('gulp-autoprefixer'),
-		concat       = require('gulp-concat'),
-		cssnano      = require('gulp-cssnano'),
-		rename       = require('gulp-rename'),
-		compass      = require('gulp-compass'),
-		clean 	     = require('gulp-clean'),
-		notify       = require('gulp-notify'),
-		plumber      = require('gulp-plumber'),
-		sourcemaps   = require('gulp-sourcemaps'),
-		uglify 	     = require('gulp-uglify'),
-		wiredep      = require('gulp-wiredep'),
-  		useref 	     = require('gulp-useref'),
-  		imagemin     = require('gulp-imagemin'),
-  		pngquant     = require('imagemin-pngquant'),
-  		browserSync  = require('browser-sync').create();
+const gulp = require('gulp');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const cssnano = require('gulp-cssnano');
+const concat = require('gulp-concat');
+const clean = require('gulp-clean');
+const notify = require('gulp-notify');
+const plumber = require('gulp-plumber');
+const sourcemaps   = require('gulp-sourcemaps');
+const imagemin = require('gulp-imagemin');
+const pngquant = require('imagemin-pngquant');
+const browserSync  = require('browser-sync').create();
 
 // Все необходимые нам пути.
-var path = {
-  dist: {   //Путь куда складывать готовые после сборки файлы.
-    html: 'dist/',
+const path = {
+	dist: {   //Путь куда складывать готовые после сборки файлы.
+		html: 'dist/',
     js: 'dist/js/',
-    css: 'dist/css/',
-    img: 'dist/img/',
-    fonts: 'dist/fonts/'
+    css: 'dist/css',
+    img: 'dist/img/', 
+   	fonts: 'dist/fonts/'
 	},
-  app: {   //Пути откуда брать исходники
+	app: {   //Пути откуда брать исходники
     html: 'app/**/*.html', 
     js: 'app/js/**/*.js',
-    css: 'app/css/main.scss',
+    css: 'app/css/*.{scss,sass}', // main css
     img: 'app/img/**/*.*', 
     fonts: 'app/fonts/**/*.*'
     },
   watch: {   //За изменением каких файлов мы хотим наблюдать
     html: 'app/**/*.html',
     js: 'app/js/**/*.js',
-    css: 'app/css/**/*.scss',
+    css: 'app/css/**/*.{scss,sass}',
     img: 'app/img/**/*.*',
     fonts: 'app/fonts/**/*.*'
     },
@@ -64,21 +59,27 @@ gulp.task('dev', ['dist', 'watch', 'browser-sync']);
 // Собирает проект.
 gulp.task('dist', ['html', 'styles', 'scripts', 'img', 'fonts']);
 
-// Задача 'watch' следит за всеми нашими файлами в проекте и при изменении тех или иных перезапустает соответсвующую задачу.
-gulp.task('watch', function() {
-    gulp.watch(path.watch.css, ['styles']); 
-    gulp.watch(path.watch.js, ['scripts']);
-    gulp.watch([path.watch.html, './bower.json'], ['html']); 
-    gulp.watch(path.watch.img, ['img']);   
-    gulp.watch(path.watch.fonts, ['fonts']);
-    gulp.watch('app/**/*.*').on('change', browserSync.reload);   //Перезапуск browserSynс.1
-});
-
 // Задача для удаление папки dist.
 gulp.task('clean', function() {
 	return gulp.src(path.clean)
 		.pipe(clean());
 });
+
+// Задача 'watch' следит за всеми нашими файлами в проекте и при изменении тех или иных перезапустает соответсвующую задачу.
+gulp.task('watch', function() {
+	gulp.watch(path.watch.css, ['styles']); 
+    gulp.watch(path.watch.js, ['scripts']);
+    gulp.watch(path.watch.html, ['html']); 
+    gulp.watch(path.watch.img, ['img']);   
+    gulp.watch(path.watch.fonts, ['fonts']);
+    gulp.watch('app/**/*.*').on('change', browserSync.reload);   //Перезапуск browserSynс.1
+});
+
+// Задача 'html' перемещает html-файлы.
+gulp.task('html', function() {
+	return gulp.src(path.app.html)
+		.pipe(gulp.dest(path.dist.html));
+})
 
 // Задача 'styles' выполняет сборку наших стилей.
 gulp.task('styles', function() {
@@ -100,30 +101,10 @@ gulp.task('styles', function() {
 		}))
 		.pipe(cssnano())   //Минификация стилей.
 		.pipe(sourcemaps.write())
-		.pipe(rename('style.css'))   //Переименование.
 		.pipe(gulp.dest(path.dist.css));
 });
 
-// Выполняем сборку html.
-gulp.task('html', function() {
-	gulp.src(path.app.html)
-		.pipe(wiredep({   //Добавление ссылок на плагины bower.
-			directory: 'bower_components/'
-		}))
-		.pipe(gulp.dest(path.dist.html))
-		.on('end', function() {   //запуск задачу 'useref' по завершению задачи 'html'.
-			gulp.run('useref');
-		});
-});
-
-// Парсит блоки и конкатенирует описанные в них стили и скрипты.
-gulp.task('useref', function() {
-	return gulp.src('dist/**/*.html')
-		.pipe(useref())   //Выполняет объединение файлов в один по указанным в разметке html комментариев.
-		.pipe(gulp.dest(path.dist.html));
-});
-
-// Выполняет сборку наших скриптов.
+// Выполняем сборку скриптов.
 gulp.task('scripts', function() {
 	return gulp.src(path.app.js)
 		.pipe(plumber({   // plumber - плагин для отловли ошибок.
@@ -152,7 +133,7 @@ gulp.task('browser-sync', function() {
 // Оптимизация изоброжений.
 gulp.task('img', function() {
 	return gulp.src(path.app.img)
-	   .pipe(imagemin({  // Сжимаем их с наилучшими настройками с учетом кеширования
+		.pipe(imagemin({  // Сжимаем их с наилучшими настройками с учетом кеширования
 	      interlaced: true,
 	      progressive: true,
 	      svgoPlugins: [{removeViewBox: false}],
